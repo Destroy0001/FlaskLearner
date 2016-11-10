@@ -1,0 +1,9 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+{{super()}}
+    {% assets filters="cssmin", output="gen/packed.css", "css/site.css" %}
+          <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+          
+    {% endassets %}
+{% endblock %}}

@@ -1,0 +1,43 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %} Fasta Uploader {% endblock %} 
+{% block styles %}
+{{super()}}
+    {% assets filters="cssmin", output="gen/packed.css", "css/site.css" %}
+          <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+    {% endassets %}
+{% endblock %}
+
+{% block content %}
+    <h3> Welcome to Fasta File Reader, please upload your file below</h3>
+	<div>
+		<form id="fasta_upload_form" enctype="multipart/form-data" >
+			<div>
+			    <span id="fasta_file_name"></span>
+				<label for="fasta_file"  class="btn btn-primary">Browse
+				    <input type="file" name="fasta_file" id="fasta_file" />
+				</label> 
+				<button type="button" class="btn btn-primary" id="fasta_file_upload"/>Upload</button>
+			</div>
+		</form>
+		<div id="fasta_file_upload_status"></div>
+		<br/>
+	</div>
+	<br/>
+	<div id ="fasta_file_shower">
+	   <hr/>
+	   <div class ="fasta_file_information" id="fasta_file_data_title"></div><br/>
+	   <hr/>
+	   <div class ="fasta_file_information" id="fasta_file_header"></div><br/>
+       <hr/>
+	   <div class ="fasta_file_information" id="fasta_file_content"></div>
+	   <hr/>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" src="{{url_for('static', filename='js/fasta.js')}}"></script>
+{% endblock %}
+
+
