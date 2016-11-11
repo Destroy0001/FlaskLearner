@@ -24,7 +24,6 @@ class FastaUpload(TemplateView):
     blueprint = fasta
     route = '/upload'
     route_name = 'fastaUpload'
-    methods = ['POST']
     
     def post(self, *args, **kwargs):
         file = request.files.get('fasta_file')
@@ -45,7 +44,7 @@ class FastaUpload(TemplateView):
             os.remove(file_path)
             return make_response('Invalid File type!',400)
         
-        #check if file content is inf fasta format or not
+        #check if file content is in fasta format or not
         file_content = open(file_path).read()
         if not self.check_fasta_file(file_content):
             os.remove(file_path)

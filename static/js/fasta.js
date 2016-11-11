@@ -1,49 +1,71 @@
 $(function(){
-	$('fasta_file_shower').hide()
+	/*caching jquery DOM objects*/
+	var $fastaFile = $('#fasta_file');
+	var $fastaFileName = $('#fasta_file_name');
+	var $fastaFileViewer = $('#fasta_file_shower');
+	var $fastaUploadStatus = $('#fasta_file_upload_status');
+	var $fastaFileHeader = $('#fasta_file_header'); 
+	var $fastaFileContent = $('#fasta_file_content');
+	var $fastaUploadButton = $('#fasta_file_upload');
+	
+	
+	$fastaFileViewer.hide()
+	
+	/*sets file name in the fileupload input*/
 	var getFileName = function(){
 		var fileName = $(this).val();
-		$('#fasta_file_name').text(fileName.split('\\').pop());
+		$fastaFileName.text(fileName.split('\\').pop());
 	}
 	
+	/*rests text data for the applied dom element*/
 	var resetTextData = function(){
 		$(this).text('')
 		
 	}
+	
+	/*executes if the upload is success*/
 	var uploadSuccess = function(data){
+		cleanFileInput();
+		$fastaUploadStatus.text('Success!');
+		/*parse new data*/
+		var data = JSON.parse(data); 
 		
-		 /*cleaning input*/
-		 $('#fasta_file').val('');
-		 $('#fasta_file_name').text('');
-		 
-		 /*clean old file data*/
-		 $('.fasta_file_information').each(resetTextData);
-		 $('#fasta_file_upload_status').text('Success!');
-		 
-		 /*parse new data*/
-		 var data = JSON.parse(data); 
-		 
 		/*parse and show new data*/
-		 $('#fasta_file_data_title').text('Your file was uploaded and saved, the content of the files are as below');
-		 $('#fasta_file_header').text(data.header?data.header:''); 
-		 $('#fasta_file_content').text(data.content?data.content:'');
-		 $('#fasta_file_shower').show()
+		$fastaFileHeader.text(data.header?data.header:''); 
+		$fastaFileContent.text(data.content?data.content:'');
+		$fastaFileViewer.show()
 	}
 	
+	/*executes if the upload has failed*/
 	var uploadFail = function(data){
-		 /*cleaning input*/
-		 $('#fasta_file').val('');
-		 $('#fasta_file_name').text('');
-		 
-		 /*clean old file data*/
-		 $('.fasta_file_information').each(resetTextData);
-		 
-		 /*Showing Error*/
-		 $('#fasta_file_upload_status').text(data.responseText);
+		cleanFileInput();
+		/*shows the error message received from server*/
+		$fastaUploadStatus.text(data.responseText);
 	}
 	
+	/*cleans file input once an upload is complete, irrespective of failure or success*/
+	var cleanFileInput = function(data){
+		
+		/*cleaning input*/
+		$($fastaFile).val('')
+		resetTextData.apply($fastaFileName)
+		
+		/*clean old file data*/
+		resetTextData.apply($fastaFileHeader)
+		resetTextData.apply($fastaFileContent)
+		
+		/*enabling upload since the ajax is complete to allow more uploads*/
+		$fastaUploadButton.prop( "disabled", false );
+	}
+	
+	
+	var disableUpload = function(){
+		/*disabling upload once an upload is in progress*/
+		$fastaUploadButton.prop( "disabled", true );
+	} 
 	
 	var fileUpload = function(){
-		if(!$('#fasta_file').val().length) 
+		if(!$fastaFile.val().length) 
 			return false; 
 		
 		/*uploading the file*/
@@ -52,16 +74,15 @@ $(function(){
 			  method:'post',
 			  url: 'upload',
 			  data: formData,
+			  beforeSend:disableUpload,
 			  contentType: false,
-			  processData: false
+			  processData: false,
 		}).done(uploadSuccess).error(uploadFail);
-		
-		return false; 
 	}
 	
 
 	
-	$('#fasta_file').change(getFileName);
-	$('#fasta_file_upload').click(fileUpload);
+	$fastaFile.change(getFileName);
+	$fastaUploadButton.click(fileUpload);
 	
 })
